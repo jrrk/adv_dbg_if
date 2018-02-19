@@ -330,8 +330,6 @@ module adbg_axi_module
             internal_register_select <= reg_select_data;
     end
 
-
-
    // This is completely unnecessary here, since the WB module has only 1 internal
    // register.  However, to make the module expandable, it is included anyway.
    always_comb
@@ -341,6 +339,8 @@ module adbg_axi_module
       default:               data_from_internal_reg = internal_reg_error;
       endcase
    end
+
+
 
    ////////////////////////////////////////////////////////////////////
    // Module-internal registers
@@ -354,7 +354,6 @@ module adbg_axi_module
    // manually cleared by a module internal register write.
    // Note we use reg_select_data straight from data_register_i, rather than the latched version - 
    // otherwise, we would write the previously selected register.
-
 
     always_ff @(posedge tck_i , negedge trstn_i)
     begin

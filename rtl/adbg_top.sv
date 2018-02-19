@@ -43,7 +43,7 @@
 // Top module
 module adbg_top
     #(
-        parameter NB_CORES       = 4,
+        parameter NB_CORES       = 1,
         parameter AXI_ADDR_WIDTH = 32,
         parameter AXI_DATA_WIDTH = 64,
         parameter AXI_USER_WIDTH = 6,

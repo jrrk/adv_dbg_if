@@ -1,17 +1,28 @@
-/* Copyright (C) 2017 ETH Zurich, University of Bologna
- * All rights reserved.
- *
- * This code is under development and not yet released to the public.
- * Until it is released, the code is under the copyright of ETH Zurich and
- * the University of Bologna, and may contain confidential and/or unpublished
- * work. Any reuse/redistribution is strictly forbidden without written
- * permission from ETH Zurich.
- *
- * Bug fixes and contributions will eventually be released under the
- * SolderPad open hardware license in the context of the PULP platform
- * (http://www.pulp-platform.org), under the copyright of ETH Zurich and the
- * University of Bologna.
- */
+////                                                              ////
+//// Copyright (C) 2008-2010 Authors                              ////
+////                                                              ////
+//// This source file may be used and distributed without         ////
+//// restriction provided that this copyright statement is not    ////
+//// removed from the file and that any derivative work contains  ////
+//// the original copyright notice and the associated disclaimer. ////
+////                                                              ////
+//// This source file is free software; you can redistribute it   ////
+//// and/or modify it under the terms of the GNU Lesser General   ////
+//// Public License as published by the Free Software Foundation; ////
+//// either version 2.1 of the License, or (at your option) any   ////
+//// later version.                                               ////
+////                                                              ////
+//// This source is distributed in the hope that it will be       ////
+//// useful, but WITHOUT ANY WARRANTY; without even the implied   ////
+//// warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR      ////
+//// PURPOSE.  See the GNU Lesser General Public License for more ////
+//// details.                                                     ////
+////                                                              ////
+//// You should have received a copy of the GNU Lesser General    ////
+//// Public License along with this source; if not, download it   ////
+//// from http://www.opencores.org/lgpl.shtml                     ////
+////                                                              ////
+//////////////////////////////////////////////////////////////////////
 
 module adv_dbg_if 
     #(
@@ -111,9 +122,11 @@ module adv_dbg_if
     logic       s_sample_preload_select;
     logic       s_mbist_select;
     logic       s_debug_select;
+    logic       s_tck;
     logic       s_tdi;
     logic       s_debug_tdo;
 
+`ifdef SIMULATION                  
     adbg_tap_top cluster_tap_i (
                 // JTAG pads
                 .tms_pad_i(tms_pad_i), 
@@ -148,6 +161,28 @@ module adv_dbg_if
                 .mbist_tdo_i(1'b0)     // from Mbist Chain
               );
 
+ assign s_tck = tck_pad_i;            
+`else
+// Select signals for boundary scan or mbist
+assign s_extest_select = 1'b0; 
+assign s_sample_preload_select = 1'b0;
+assign s_mbist_select = 1'b0;
+
+xilinx_internal_jtag tap_top(
+            .tck_o( s_tck ),
+            .debug_tdo_i( s_debug_tdo ),
+            .tdi_o( s_tdi ),
+            // TAP states
+            .test_logic_reset_o(s_test_logic_reset),
+            .run_test_idle_o(s_run_test_idle),
+            .shift_dr_o(s_shift_dr),
+            .pause_dr_o(s_pause_dr), 
+            .update_dr_o(s_update_dr),
+            .capture_dr_o(s_capture_dr),    
+            .debug_select_o( s_debug_select )
+    );
+`endif
+
 // Top module
 adbg_top #(
         .NB_CORES(NB_CORES),
@@ -158,7 +193,7 @@ adbg_top #(
     ) dbg_module_i (
 
                 // JTAG signals
-                .tck_i(tck_pad_i),
+                .tck_i(s_tck),
                 .tdi_i(s_tdi),
                 .tdo_o(s_debug_tdo),
                 .trstn_i(trstn_pad_i),

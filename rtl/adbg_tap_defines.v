@@ -60,20 +60,21 @@
 
 
 // Define IDCODE Value
-`define IDCODE_VALUE  32'h249511c3
-// 0001             version
-// 0100100101010001 part number (IQ)
-// 00011100001      manufacturer id (flextronics)
-// 1                required by standard
+`define IDCODE_VALUE  32'h13631093 // Simulate Xilinx artix7
+//"XXXX" &        -- version
+//"0011011" &     -- family
+//"000110001" &   -- array size
+//"00001001001" & -- manufacturer
+//"1";            -- required by 1149.1
 
 // Length of the Instruction register
-`define	IR_LENGTH	4
+`define	IR_LENGTH	6
 
 // Supported Instructions
-`define EXTEST          4'b0000
-`define SAMPLE_PRELOAD  4'b0001
-`define IDCODE          4'b0010
-`define DEBUG           4'b1000
-`define MBIST           4'b1001
-`define BYPASS          4'b1111
+`define EXTEST          6'b100110
+`define SAMPLE_PRELOAD  6'b000001
+`define IDCODE          6'b001001
+`define DEBUG           6'b000010
+`define MBIST           6'b000011
+`define BYPASS          6'b111111
 
